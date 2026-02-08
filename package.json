@@ -1,6 +1,6 @@
 {
   "name": "konthaina-khqr",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "KHQR / EMVCo merchant-presented payload generator (Bakong Cambodia) with CRC verification.",
   "keywords": [
     "KHQR",
