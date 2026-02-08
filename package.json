@@ -1,0 +1,50 @@
+{
+  "name": "konthaina-khqr",
+  "version": "0.1.0",
+  "description": "KHQR / EMVCo merchant-presented payload generator (Bakong Cambodia) with CRC verification.",
+  "keywords": [
+    "KHQR",
+    "Bakong",
+    "EMVCo",
+    "QR",
+    "Cambodia",
+    "CRC16",
+    "TLV"
+  ],
+  "license": "MIT",
+  "author": "",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "format": "prettier -w ."
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "eslint": "^9.8.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.3.3",
+    "tsup": "^8.2.4",
+    "typescript": "^5.6.3",
+    "vitest": "4.0.18"
+  }
+}
