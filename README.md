@@ -16,10 +16,11 @@ npm i konthaina-khqr
 import { KHQRGenerator } from "konthaina-khqr";
 
 const { qr, md5 } = new KHQRGenerator("individual")
+  .setStatic(true) // static QR (no timestamp)
   .setBakongAccountId("john_smith@devb")
   .setMerchantName("John Smith")
   .setCurrency("USD")
-  .setAmount("1.00")
+  // .setAmount("1.00") // usually leave empty for static
   .setMerchantCity("Phnom Penh")
   .generate();
 
@@ -46,7 +47,7 @@ const { qr } = new KHQRGenerator("merchant")
 ## API
 
 - `new KHQRGenerator("individual" | "merchant")`
-- `.setStatic(boolean)` (static QR omits timestamp)
+- `.setStatic(boolean)` (static QR sets POI=11 and omits timestamp)
 - `.setBakongAccountId(string)`
 - `.setMerchantName(string)`
 - `.setMerchantCity(string)`
@@ -91,4 +92,18 @@ npm run build
 ```bash
 npm login
 npm publish --access public
+```
+
+## Release (Update version)
+
+1) Bump version:
+```bash
+npm version patch
+```
+(0.1.0 → 0.1.1)
+
+2) Build + Publish:
+```bash
+npm run build
+npm publish
 ```
