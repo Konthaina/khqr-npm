@@ -239,9 +239,13 @@ export class KHQRGenerator {
       if (t) payload += tlv("64", t);
     }
 
-    // Tag 99: Timestamp (dynamic only)
+    // Tag 99: Timestamp template (dynamic only)
+    // KHQR implementations commonly wrap the timestamp in sub-tag 00.
     const timestamp = this.isStatic ? null : String(Date.now());
-    if (timestamp) payload += tlv("99", timestamp);
+    if (timestamp) {
+      const t99 = tlv("00", timestamp);
+      payload += tlv("99", t99);
+    }
 
     // CRC: Tag 63 (length 04). Compute over payload + "6304"
     const crcInput = payload + "6304";

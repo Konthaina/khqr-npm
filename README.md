@@ -47,7 +47,7 @@ const { qr } = new KHQRGenerator("merchant")
 ## API
 
 - `new KHQRGenerator("individual" | "merchant")`
-- `.setStatic(boolean)` (static QR sets POI=11 and omits timestamp)
+- `.setStatic(boolean)` (static QR sets POI=11 and omits timestamp; dynamic uses Tag 99 sub-tag 00)
 - `.setBakongAccountId(string)`
 - `.setMerchantName(string)`
 - `.setMerchantCity(string)`
