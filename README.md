@@ -104,8 +104,8 @@ npm version patch
 
 2) Tag release:
 ```bash
-git tag -a v0.1.1 -m "Release v0.1.1"
-git push origin v0.1.1
+git tag -a v0.1.0 -m "Release v0.1.0"
+git push origin v0.1.0
 ```
 
 3) Build + Publish:
