@@ -15,17 +15,21 @@ npm i konthaina-khqr
 ```ts
 import { KHQRGenerator } from "konthaina-khqr";
 
-const { qr, md5 } = new KHQRGenerator("individual")
+const { qr, md5, timestamp, expirationTimestamp } = new KHQRGenerator("individual")
   .setStatic(true) // static QR (no timestamp)
   .setBakongAccountId("john_smith@devb")
   .setMerchantName("John Smith")
   .setCurrency("USD")
   // .setAmount("1.00") // usually leave empty for static
+  // .setStatic(false) // dynamic QR has timestamp and expirationTimestamp
+  // .setExpirationDurationMs(5 * 60 * 1000) // default: 5 minutes
   .setMerchantCity("Phnom Penh")
   .generate();
 
 console.log(qr);
 console.log(md5);
+console.log(timestamp);
+console.log(expirationTimestamp);
 console.log(KHQRGenerator.verify(qr)); // true/false
 ```
 
@@ -47,7 +51,9 @@ const { qr } = new KHQRGenerator("merchant")
 ## API
 
 - `new KHQRGenerator("individual" | "merchant")`
-- `.setStatic(boolean)` (static QR sets POI=11 and omits timestamp; dynamic uses Tag 99 sub-tag 00)
+- `.setStatic(boolean)` (static QR sets POI=11 and omits timestamps; dynamic uses Tag 99 sub-tags 00 and 01)
+- `.setExpirationTimestamp(number|string|Date)` (absolute expiration timestamp in milliseconds)
+- `.setExpirationDurationMs(number)` (duration from generation time; defaults to 300000)
 - `.setBakongAccountId(string)`
 - `.setMerchantName(string)`
 - `.setMerchantCity(string)`

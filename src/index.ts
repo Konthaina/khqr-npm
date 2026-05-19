@@ -5,6 +5,7 @@ export type MerchantType = "individual" | "merchant";
 export interface GenerateResult {
   qr: string;
   timestamp: string | null;
+  expirationTimestamp: string | null;
   type: MerchantType;
   md5: string;
 }
@@ -16,7 +17,7 @@ export interface GenerateResult {
  * - Merchant:   Tag 30
  * - Additional: Tag 62
  * - Alt Lang:   Tag 64
- * - Timestamp:  Tag 99 (dynamic only)
+ * - Timestamp:  Tag 99 (dynamic only; sub-tag 00 created, sub-tag 01 expires)
  * - CRC:        Tag 63 (CRC-16/CCITT-FALSE)
  */
 export class KHQRGenerator {
@@ -52,6 +53,8 @@ export class KHQRGenerator {
   private merchantCityAlternateLanguage?: string;
 
   private isStatic = false;
+  private expirationTimestamp?: string;
+  private expirationDurationMs = 5 * 60 * 1000;
 
   constructor(merchantType: MerchantType) {
     this.merchantType = merchantType;
@@ -59,6 +62,18 @@ export class KHQRGenerator {
 
   setStatic(v: boolean) {
     this.isStatic = !!v;
+    return this;
+  }
+
+  setExpirationTimestamp(v: number | string | Date) {
+    this.expirationTimestamp = normalizeTimestamp(v);
+    return this;
+  }
+
+  setExpirationDurationMs(v: number) {
+    if (!Number.isFinite(v) || v <= 0) throw new Error("Expiration duration must be a positive number");
+    this.expirationDurationMs = Math.floor(v);
+    this.expirationTimestamp = undefined;
     return this;
   }
 
@@ -240,10 +255,15 @@ export class KHQRGenerator {
     }
 
     // Tag 99: Timestamp template (dynamic only)
-    // KHQR implementations commonly wrap the timestamp in sub-tag 00.
-    const timestamp = this.isStatic ? null : String(Date.now());
+    // Bakong-compatible payloads wrap the created timestamp in sub-tag 00
+    // and the expiration timestamp in sub-tag 01.
+    const now = Date.now();
+    const timestamp = this.isStatic ? null : String(now);
+    const expirationTimestamp = this.isStatic
+      ? null
+      : (this.expirationTimestamp ?? String(now + this.expirationDurationMs));
     if (timestamp) {
-      const t99 = tlv("00", timestamp);
+      const t99 = tlv("00", timestamp) + tlv("01", expirationTimestamp!);
       payload += tlv("99", t99);
     }
 
@@ -254,7 +274,7 @@ export class KHQRGenerator {
 
     const md5 = crypto.createHash("md5").update(qr, "utf8").digest("hex");
 
-    return { qr, timestamp, type: this.merchantType, md5 };
+    return { qr, timestamp, expirationTimestamp, type: this.merchantType, md5 };
   }
 
   static verify(qr: string): boolean {
@@ -350,4 +370,10 @@ function normalizeAmountString(s: string, currency: "KHR" | "USD"): string {
   if (!s.includes(".")) return s;
   s = s.replace(/0+$/, "").replace(/\.$/, "");
   return s.length ? s : "0";
+}
+
+function normalizeTimestamp(v: number | string | Date): string {
+  const n = v instanceof Date ? v.getTime() : Number(v);
+  if (!Number.isFinite(n) || n <= 0) throw new Error("Timestamp must be a positive millisecond value");
+  return String(Math.floor(n));
 }
